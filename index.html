@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - JournalEdge</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body class="auth-body">
+    <div class="auth-container">
+        <div class="auth-card">
+            <h2 class="auth-title"><i class="fas fa-bolt"></i> JournalEdge</h2>
+            <p class="auth-subtitle" id="authSubtitle">Log in to your trading workspace</p>
+
+            <form id="authForm" class="input-group">
+                <!-- Registration Specific Fields -->
+                <div id="regFields" style="display: none; flex-direction: column; gap: 15px; margin-bottom: 15px;">
+                    <div style="display: flex; gap: 10px; width: 100%;">
+                        <div class="input-group" style="flex: 1; min-width: 0;">
+                            <label>First Name</label>
+                            <input type="text" id="firstName" placeholder="First Name">
+                        </div>
+                        <div class="input-group" style="flex: 1; min-width: 0;">
+                            <label>Last Name</label>
+                            <input type="text" id="lastName" placeholder="Last Name">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Shared Fields -->
+                <label id="userLabel">Username</label>
+                <input type="text" id="username" required placeholder="Enter your username">
+
+                <label class="mt-15" id="passLabel">Password</label>
+                <input type="password" id="password" required placeholder="Enter your password">
+
+                <button type="submit" id="submitBtn" class="btn-primary mt-15"
+                    style="width: 100%; padding: 12px;">Access Dashboard</button>
+            </form>
+
+            <p class="auth-switch"><span id="switchText">Don't have an account?</span> <a href="#"
+                    id="toggleAuth">Register here</a></p>
+        </div>
+    </div>
+
+    <script>
+        const authForm = document.getElementById('authForm');
+        const toggleBtn = document.getElementById('toggleAuth');
+        const regFields = document.getElementById('regFields');
+        const authSubtitle = document.getElementById('authSubtitle');
+        const submitBtn = document.getElementById('submitBtn');
+        const userLabel = document.getElementById('userLabel');
+        const passLabel = document.getElementById('passLabel');
+        const switchText = document.getElementById('switchText');
+
+        let isLogin = true;
+
+        toggleBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            isLogin = !isLogin;
+            if (isLogin) {
+                regFields.style.display = 'none';
+                authSubtitle.innerText = 'Log in to your trading workspace';
+                submitBtn.innerText = 'Access Dashboard';
+                userLabel.innerText = 'Username';
+                passLabel.innerText = 'Password';
+                switchText.innerText = "Don't have an account?";
+                toggleBtn.innerText = 'Register here';
+                document.getElementById('firstName').removeAttribute('required');
+                document.getElementById('lastName').removeAttribute('required');
+            } else {
+                regFields.style.display = 'flex';
+                authSubtitle.innerText = 'Create your JournalEdge profile';
+                submitBtn.innerText = 'Create Account';
+                userLabel.innerText = 'New Username';
+                passLabel.innerText = 'New Password';
+                switchText.innerText = "Already have an account?";
+                toggleBtn.innerText = 'Log in here';
+                document.getElementById('firstName').setAttribute('required', 'true');
+                document.getElementById('lastName').setAttribute('required', 'true');
+            }
+        });
+
+        authForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+
+            if (!isLogin) {
+                const firstName = document.getElementById('firstName').value.trim();
+                const lastName = document.getElementById('lastName').value.trim();
+
+                const userProfile = { firstName, lastName, username, password };
+                localStorage.setItem('journalEdge_userProfile', JSON.stringify(userProfile));
+                localStorage.setItem('journalEdge_auth', 'true');
+                window.location.href = 'dashboard.html';
+            } else {
+                const storedProfile = JSON.parse(localStorage.getItem('journalEdge_userProfile'));
+                if (storedProfile && storedProfile.username === username && storedProfile.password === password) {
+                    localStorage.setItem('journalEdge_auth', 'true');
+                    window.location.href = 'dashboard.html';
+                } else {
+                    alert('Invalid Username or Password. Please register if you have not created an account.');
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>
